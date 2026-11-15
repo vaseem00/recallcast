@@ -1,0 +1,122 @@
+/* The library: the paste line, then every playlist as one row of a schedule. */
+
+/* ---------- paste ---------- */
+
+.pastePanel { min-width: 0; }
+.paste { display: grid; gap: var(--space-xs); }
+.pasteLabel { font-weight: 600; }
+.pasteRow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-xs); }
+.pasteRow :global(.input) { min-height: 52px; font-size: var(--text-lg); }
+.pasteRow :global(.btn) { min-height: 52px; }
+
+/* ---------- empty ---------- */
+
+.empty {
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--space-xl) 0;
+  border-top: var(--rule-hair) solid var(--color-rule);
+  color: var(--color-ink-2);
+}
+.emptyHead { font-size: var(--text-2xl); text-transform: uppercase; color: var(--color-ink); }
+
+/* ---------- the schedule ---------- */
+
+.listHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: var(--rule-heavy) solid var(--color-ink);
+}
+.listTitle { font-size: var(--text-xl); text-transform: uppercase; }
+
+.grid { display: grid; }
+
+.item {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--time-col) minmax(0, 1fr) auto;
+  column-gap: var(--space-lg);
+  align-items: center;
+  padding: var(--space-md) 0;
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+  transition: background-color var(--dur-short) var(--ease-out);
+}
+.item:hover { background: var(--color-paper-2); }
+
+.figure {
+  padding-left: var(--space-xs);
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-display);
+  font-weight: 800;
+  font-size: var(--text-2xl);
+  line-height: 1;
+}
+.figureOf { color: var(--color-muted); font-weight: 600; }
+
+.itemLink {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: var(--space-md);
+  align-items: center;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+/* the whole row is the target */
+.itemLink::after { content: ""; position: absolute; inset: 0; }
+.itemLink:focus-visible { outline: none; }
+.itemLink:focus-visible::after { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+
+.thumb { aspect-ratio: 16 / 9; overflow: hidden; background: var(--color-paper-3); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.thumbFallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: var(--color-band);
+  color: var(--color-band-ink);
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-display);
+  font-weight: 800;
+  font-size: var(--text-xl);
+}
+
+.itemBody { display: grid; gap: var(--space-2xs); min-width: 0; }
+.itemTitle { font-size: var(--text-title); max-width: none; text-wrap: pretty; }
+.item:hover .itemTitle { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.18em; }
+.itemChannel { display: flex; flex-wrap: wrap; gap: 0 var(--space-sm); font-size: var(--text-sm); color: var(--color-muted); }
+/* Separator trails the previous item (same flex item), so no wrapped line starts with "·". */
+.itemChannel > span:not(:last-child)::after { content: "·"; margin-left: var(--space-sm); }
+
+.itemMeta {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: end;
+  gap: var(--space-2xs);
+  padding-right: var(--space-xs);
+}
+
+.itemMeter { position: absolute; inset: auto 0 -1px 0; height: 3px; }
+
+.itemError {
+  grid-column: 2 / -1;
+  margin-top: var(--space-xs);
+  font-size: var(--text-sm);
+  color: var(--color-error);
+}
+
+@media (max-width: 40rem) {
+  .pasteRow { grid-template-columns: minmax(0, 1fr); }
+  .pasteRow :global(.input) { font-size: var(--text-md); }
+  .item { grid-template-columns: var(--time-col) minmax(0, 1fr); row-gap: var(--space-xs); column-gap: var(--space-sm); }
+  .itemLink { grid-template-columns: minmax(0, 1fr); }
+  .thumb { display: none; }
+  .figure { font-size: var(--text-xl); }
+  .itemMeta { grid-column: 2; justify-items: start; padding-right: 0; }
+  .itemError { grid-column: 2; }
+}

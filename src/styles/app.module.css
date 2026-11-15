@@ -1,0 +1,120 @@
+/* The signed-in shell: a pine band across the top, the work below it on paper. */
+
+.shell { min-height: 100dvh; display: flex; flex-direction: column; }
+
+.bar { position: sticky; top: 0; z-index: var(--z-sticky); }
+
+.barInner {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-xl);
+  width: 100%;
+  max-width: calc(var(--container-app) + 2 * var(--gutter));
+  min-height: var(--bar-h);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.barInner > :first-child { align-self: center; }
+
+.navLinks { display: flex; align-items: stretch; gap: var(--space-lg); }
+.navLinks > li { display: flex; }
+
+.navLink {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-band-muted);
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-label);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color var(--dur-short) var(--ease-out);
+}
+.navLink::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: var(--rule-heavy);
+  background: var(--color-signal);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+.navLink:hover { color: var(--color-band-ink); }
+.navLink[aria-current="page"] { color: var(--color-band-ink); }
+.navLink[aria-current="page"]::after { transform: scaleX(1); }
+.navLink:focus-visible { outline: 2px solid var(--color-signal); outline-offset: -4px; }
+
+.account { display: flex; align-items: center; gap: var(--space-sm); margin-left: auto; min-width: 0; }
+.barSignOut { display: contents; }
+
+/* The email links to the account page and takes the nav's "on air" rule when it is open. */
+.accountLink {
+  position: relative;
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 44px;
+  color: var(--color-band-muted);
+  text-decoration: none;
+  transition: color var(--dur-short) var(--ease-out);
+}
+.accountLink::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: var(--rule-heavy);
+  background: var(--color-signal);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+.accountLink:hover,
+.accountLink[aria-current="page"] { color: var(--color-band-ink); }
+.accountLink:hover .email { text-decoration: underline; text-underline-offset: 0.2em; }
+.accountLink[aria-current="page"]::after { transform: scaleX(1); }
+.accountLink:focus-visible { outline: 2px solid var(--color-signal); outline-offset: -4px; }
+.email { max-width: 24ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--text-sm); }
+.accountShort {
+  display: none;
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-label);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: calc(var(--container-app) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding: var(--space-2xl) var(--gutter) calc(var(--space-4xl) + var(--space-2xl));
+}
+
+.page { display: grid; gap: var(--space-xl); min-width: 0; }
+
+.pageHead {
+  display: grid;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-lg);
+  border-bottom: var(--rule-heavy) solid var(--color-ink);
+}
+.pageHead h1 { text-transform: uppercase; }
+.pageHead p { color: var(--color-ink-2); }
+
+@media (max-width: 40rem) {
+  .barInner { gap: var(--space-md); }
+  .navLinks { gap: var(--space-md); }
+  .email { display: none; }
+  .accountShort { display: inline; }
+  /* On a phone the bar keeps Library and Account; Sign out lives on the account page. */
+  .barSignOut { display: none; }
+  .main { padding-top: var(--space-xl); }
+}

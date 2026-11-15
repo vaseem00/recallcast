@@ -1,0 +1,40 @@
+# Build context for the Dockerfile: source only, never secrets or local data.
+node_modules
+.next
+out
+build
+coverage
+test-results
+playwright-report
+*.tsbuildinfo
+next-env.d.ts
+
+# runtime data (the image gets a fresh volume at /data)
+data
+storage
+backups
+*.db
+*.db-wal
+*.db-shm
+
+# secrets: every .env file (keys are set as Railway variables)
+.env*
+*.pem
+
+# docs and repository tooling (not needed in the image)
+docs
+.github
+
+# tooling / editor / VCS
+.git
+.gitignore
+.vscode
+.idea
+.hallmark
+.claude
+.iceberg
+.vercel
+npm-debug.log*
+*.log
+Dockerfile
+.dockerignore

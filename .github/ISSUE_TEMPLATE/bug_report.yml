@@ -1,0 +1,45 @@
+name: Bug report
+description: Something does not work the way the docs say it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Never paste API keys, the contents of `.env.local`, or your database here.
+        For a security problem, use the Security tab instead (see SECURITY.md).
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Paste a playlist with ...
+        2. Open Reels ...
+        3. ...
+  - type: dropdown
+    id: providers
+    attributes:
+      label: Provider modes
+      multiple: true
+      options:
+        - All mock
+        - YOUTUBE_PROVIDER=api
+        - TRANSCRIPT_PROVIDER=youtubei
+        - AI_PROVIDER=anthropic
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: Node 24.x, Windows 11, Chrome on Android (or Docker on Railway)
+  - type: textarea
+    id: logs
+    attributes:
+      label: Server log lines
+      description: The relevant lines, for example those starting with [jobs] or [transcripts]. Remove anything private.
+      render: text

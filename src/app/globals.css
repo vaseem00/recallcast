@@ -1,0 +1,204 @@
+@import url("../styles/tokens.css");
+@import url("../styles/base.css");
+
+/* ---------- the band: any region set on pine. Controls inside it re-read these. ---------- */
+
+.band {
+  --color-ink: var(--color-band-ink);
+  --color-ink-2: var(--color-band-ink);
+  --color-muted: var(--color-band-muted);
+  --color-paper: var(--color-band);
+  --color-paper-2: var(--color-band-2);
+  --color-paper-3: var(--color-band-rule);
+  --color-rule: var(--color-band-rule);
+  --color-focus: var(--color-signal);
+  background: var(--color-band);
+  color: var(--color-band-ink);
+}
+.band ::selection { background: var(--color-signal); color: var(--color-signal-ink); }
+
+/* ---------- buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-height: 44px;
+  padding: 0 var(--space-lg);
+  border: var(--rule-hair) solid var(--color-ink);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-label);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out), border-color var(--dur-short) var(--ease-out);
+}
+.btn:hover { background: var(--color-ink); color: var(--color-paper); }
+.btn:active { background: var(--color-ink-2); border-color: var(--color-ink-2); color: var(--color-paper); }
+.btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.btn:disabled,
+.btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; background: transparent; color: var(--color-ink); }
+.btn[aria-busy="true"] { cursor: progress; }
+
+.btn--primary { background: var(--color-ink); color: var(--color-paper); }
+.btn--primary:hover { background: var(--color-signal); border-color: var(--color-signal-ink); color: var(--color-signal-ink); }
+.btn--primary:active { background: var(--color-signal-2); border-color: var(--color-signal-ink); color: var(--color-signal-ink); }
+.btn--primary:disabled,
+.btn--primary[aria-disabled="true"] { background: var(--color-ink); color: var(--color-paper); }
+
+.btn--quiet { border-color: transparent; }
+.btn--quiet:hover { background: var(--color-paper-2); color: var(--color-ink); border-color: transparent; }
+.btn--quiet:active { background: var(--color-paper-3); color: var(--color-ink); border-color: transparent; }
+
+.btn--danger { border-color: var(--color-error); color: var(--color-error); }
+.btn--danger:hover,
+.btn--danger:active { background: var(--color-error); border-color: var(--color-error); color: var(--color-paper); }
+.btn--danger:disabled { background: transparent; color: var(--color-error); }
+
+.btn--small { min-height: 36px; padding: 0 var(--space-md); font-size: var(--text-xs); }
+
+.link {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--color-muted);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--dur-short) var(--ease-out);
+}
+.link:hover { text-decoration-color: var(--color-ink); text-decoration-thickness: 2px; }
+.link:active { color: var(--color-ink-2); }
+.link:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; border-radius: var(--radius); }
+
+/* ---------- fields ---------- */
+
+.field { display: grid; gap: var(--space-xs); }
+.field__label { font-size: var(--text-sm); font-weight: 600; color: var(--color-ink); }
+.field__hint { min-height: 1lh; font-size: var(--text-sm); color: var(--color-muted); }
+.field__hint[data-tone="error"] { color: var(--color-error); }
+.field__hint[data-tone="ok"] { color: var(--color-success); }
+
+.input,
+.textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 var(--space-sm);
+  border: var(--rule-hair) solid var(--color-ink);
+  border-radius: var(--radius);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: var(--text-md);
+  line-height: 1.4;
+  transition: box-shadow var(--dur-short) var(--ease-out);
+}
+.textarea { min-height: 160px; padding: var(--space-sm); resize: vertical; }
+.input::placeholder,
+.textarea::placeholder { color: var(--color-muted); opacity: 1; }
+.input:hover,
+.textarea:hover { box-shadow: inset 0 -2px 0 var(--color-ink); }
+.input:focus-visible,
+.textarea:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; box-shadow: inset 0 -2px 0 var(--color-signal-2); }
+.input[aria-invalid="true"],
+.textarea[aria-invalid="true"] { border-color: var(--color-error); box-shadow: inset 0 -2px 0 var(--color-error); }
+.input:disabled,
+.textarea:disabled { opacity: 0.55; cursor: not-allowed; background: var(--color-paper-2); box-shadow: none; }
+
+/* ---------- status: a square marker and a word, as a schedule prints it ---------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0;
+  color: var(--color-ink-2);
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-label);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.chip::before { content: ""; flex: none; width: 0.6em; height: 0.6em; background: currentColor; }
+.chip[data-tone="work"] { color: var(--color-ink); }
+.chip[data-tone="work"]::before { animation: on-air 1.2s steps(2, jump-none) infinite; }
+.chip[data-tone="ok"] { color: var(--color-success); }
+.chip[data-tone="warn"] { color: var(--color-warn); }
+.chip[data-tone="error"] { color: var(--color-error); }
+.chip[data-tone="quiet"] { color: var(--color-muted); }
+.chip[data-tone="quiet"]::before { background: transparent; box-shadow: inset 0 0 0 1px currentColor; }
+.chip[data-tone="live"] { padding: 0.35em 0.6em; background: var(--color-signal); color: var(--color-signal-ink); }
+.chip[data-tone="live"]::before { animation: on-air 1.2s steps(2, jump-none) infinite; }
+@keyframes on-air { from { opacity: 1; } to { opacity: 0.15; } }
+
+.notice {
+  padding: var(--space-sm) var(--space-md);
+  border-top: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper-2);
+  color: var(--color-ink);
+  font-size: var(--text-sm);
+}
+.notice[data-tone="error"] { border-top-color: var(--color-error); color: var(--color-error); }
+
+.meter { position: relative; height: 3px; overflow: hidden; background: var(--color-rule); }
+.meter__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--color-ink);
+  transform-origin: left center;
+  transform: scaleX(var(--meter, 0));
+  transition: transform var(--dur-long) var(--ease-out);
+}
+
+.skeleton { display: block; background: var(--color-paper-3); animation: skeleton-breathe 1.4s var(--ease-in-out) infinite alternate; }
+@keyframes skeleton-breathe { from { opacity: 0.5; } to { opacity: 1; } }
+
+.skip {
+  position: absolute;
+  left: var(--space-md);
+  top: calc(-1 * var(--space-3xl));
+  z-index: var(--z-toast);
+  padding: var(--space-xs) var(--space-md);
+  background: var(--color-signal);
+  color: var(--color-signal-ink);
+  font-weight: 600;
+}
+.skip:focus-visible { top: var(--space-md); }
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-display);
+  font-weight: 800;
+  font-size: 1.375rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: inherit;
+  text-decoration: none;
+}
+.wordmark:hover { color: var(--color-signal); }
+.wordmark:focus-visible { outline: 2px solid var(--color-signal); outline-offset: 4px; }
+
+/* The mark (src/components/BrandMark.tsx): the timeline follows the text colour, the lit part
+ * is the highlighter, the play sign is cut out of it in the band colour. */
+.brand-mark { width: 1.5em; height: 1em; flex: none; }
+.brand-mark__track { fill: currentColor; opacity: 0.45; }
+.brand-mark__on { fill: var(--color-signal); }
+.brand-mark__play { fill: var(--color-band); }
+/* Phones: the bar has no room to spare beside the navigation; the text alone carries the name. */
+@media (max-width: 400px) {
+  .brand-mark { display: none; }
+}

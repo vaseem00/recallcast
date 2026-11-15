@@ -1,0 +1,57 @@
+{
+  "name": "recallcast",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Turn YouTube playlists into the 3 to 4 minutes of each video that matter, played back to back, plus a swipeable reels feed of the best one-minute moments.",
+  "license": "MIT",
+  "author": "Muhammed Vasim (https://github.com/vaseem00)",
+  "homepage": "https://github.com/vaseem00/recallcast#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vaseem00/recallcast.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vaseem00/recallcast/issues"
+  },
+  "keywords": [
+    "youtube",
+    "podcast",
+    "reels",
+    "highlights",
+    "transcripts",
+    "claude",
+    "nextjs",
+    "sqlite",
+    "self-hosted"
+  ],
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest run",
+    "typecheck": "next typegen && tsc --noEmit",
+    "smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/smoke.ps1"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.6.0",
+    "next": "16.4.5",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1",
+    "youtubei.js": "^18.3.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.5",
+    "typescript": "^5",
+    "vitest": "^5.1.0"
+  }
+}

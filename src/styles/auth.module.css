@@ -1,0 +1,48 @@
+/* Log in and sign up: the band, a heading at schedule scale, one form. */
+
+.shell { min-height: 100dvh; display: flex; flex-direction: column; }
+
+.top { display: flex; align-items: center; min-height: 56px; }
+
+.main { flex: 1; padding-block: clamp(var(--space-xl), 9vh, var(--space-3xl)) var(--space-2xl); }
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  gap: var(--space-xl) var(--space-2xl);
+  align-items: start;
+  padding-top: var(--space-lg);
+  border-top: var(--rule-heavy) solid var(--color-ink);
+}
+
+.head { display: grid; gap: var(--space-md); }
+.head h1 { font-size: var(--text-display); text-transform: uppercase; max-width: 9ch; line-height: 0.92; }
+.head p { color: var(--color-ink-2); font-size: var(--text-lead); max-width: 34ch; }
+
+.panel { min-width: 0; }
+.form { display: grid; gap: var(--space-sm); }
+.labelRow { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); }
+.reveal {
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-ink-2);
+  font-size: var(--text-sm);
+  text-decoration: underline;
+  text-decoration-color: var(--color-muted);
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+.reveal:hover { color: var(--color-ink); text-decoration-color: var(--color-ink); }
+.reveal:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.errorSlot:empty { display: none; }
+.submit { width: 100%; min-height: 52px; margin-top: var(--space-xs); }
+.switch { margin-top: var(--space-sm); font-size: var(--text-sm); color: var(--color-ink-2); }
+
+.foot { padding-block: var(--space-lg); font-size: var(--text-sm); color: var(--color-muted); }
+
+@media (max-width: 52rem) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .head h1 { max-width: none; }
+}

@@ -1,0 +1,281 @@
+/* The player: a pine band fixed to the bottom edge. On the left, YouTube's own embedded player
+ * (kept visible and at least 200px tall, as YouTube's terms require); on the right, the
+ * transport for the clip. The elapsed part of the clip is the highlighter. */
+
+.player {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: var(--z-player);
+  background: var(--color-band);
+  color: var(--color-band-ink);
+  border-top: var(--rule-heavy) solid var(--color-signal);
+  --color-focus: var(--color-signal);
+  animation: player-in var(--dur-long) var(--ease-out);
+}
+@keyframes player-in { from { transform: translateY(100%); } to { transform: none; } }
+.player ::selection { background: var(--color-signal); color: var(--color-signal-ink); }
+
+.inner {
+  display: grid;
+  grid-template-columns: 356px minmax(0, 1fr);
+  gap: var(--space-lg);
+  align-items: center;
+  width: 100%;
+  max-width: calc(var(--container-app) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding: var(--space-sm) var(--gutter);
+  padding-bottom: max(var(--space-sm), env(safe-area-inset-bottom));
+}
+
+/* YouTube's iframe goes in here. */
+.screen {
+  width: 356px;
+  height: 200px;
+  background: #000;
+  outline: var(--rule-hair) solid var(--color-band-rule);
+}
+.screen > *, .screen iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+/* Transparent layer over the video that takes the taps (1 play/pause, 2 skip, 3 full screen) and
+ * the drags. It draws nothing, so the video stays fully visible. */
+.screenWrap { position: relative; min-width: 0; }
+.tapLayer { position: absolute; inset: 0; z-index: 1; cursor: pointer; touch-action: none; -webkit-tap-highlight-color: transparent; }
+.flash {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  translate: 0 -50%;
+  max-width: calc(100% - 2 * var(--space-md));
+  padding: var(--space-2xs) var(--space-xs);
+  background: var(--color-signal);
+  color: var(--color-signal-ink);
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-label);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  pointer-events: none;
+  animation: flash-in var(--dur-short) var(--ease-out);
+}
+.flash[data-side="left"] { left: var(--space-md); }
+.flash[data-side="right"] { right: var(--space-md); }
+.flash[data-side="center"] { left: 50%; translate: -50% -50%; text-align: center; }
+@keyframes flash-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Grab handle: swipe the docked bar down for the mini player, or drag the mini player. */
+.handle { display: grid; place-items: center; height: 28px; margin-bottom: -10px; cursor: grab; touch-action: none; }
+.handle span { width: 56px; height: 5px; background: var(--color-band-muted); }
+.handle:hover span { background: var(--color-band-muted); }
+.player[data-dragging] .handle, .player[data-dragging] .tapLayer { cursor: grabbing; }
+.player:not([data-dragging]) { transition: transform var(--dur-short) var(--ease-out); }
+
+.side { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xs); min-width: 0; }
+.controls { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
+
+/* Reserves room under the page content so the fixed player never covers the last rows. */
+.spacer { height: 240px; }
+
+/* ---------- transport ---------- */
+
+.transport { display: flex; align-items: center; gap: var(--space-2xs); }
+.skipBtn:disabled, .playBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.skipBtn:disabled:hover { background: transparent; color: var(--color-band-muted); }
+
+.playBtn,
+.skipBtn {
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out);
+}
+.playBtn { width: 48px; height: 48px; background: var(--color-signal); color: var(--color-signal-ink); }
+.playBtn:hover { background: var(--color-band-ink); }
+.playBtn:active { background: var(--color-signal-2); }
+.playBtn[aria-busy="true"] { animation: on-air-btn 1s steps(2, jump-none) infinite; }
+@keyframes on-air-btn { from { opacity: 1; } to { opacity: 0.6; } }
+.skipBtn { width: 44px; height: 44px; background: transparent; color: var(--color-band-muted); }
+.skipBtn:hover { background: var(--color-band-2); color: var(--color-band-ink); }
+.skipBtn:active { color: var(--color-signal); }
+.playBtn:focus-visible,
+.skipBtn:focus-visible { outline: 2px solid var(--color-signal); outline-offset: 2px; }
+
+/* ---------- title and track ---------- */
+
+.titleRow { display: grid; gap: var(--space-3xs); min-width: 0; }
+.title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  line-height: 1.2;
+}
+.meta { display: flex; flex-wrap: wrap; column-gap: var(--space-md); row-gap: 0; min-width: 0; font-size: var(--text-sm); color: var(--color-band-muted); }
+.meta > span { white-space: nowrap; }
+
+.scrub { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-sm); align-items: center; }
+.time { min-width: 4ch; font-size: var(--text-sm); font-weight: 600; color: var(--color-band-muted); }
+.time:first-child { color: var(--color-band-ink); }
+.time:last-child { text-align: right; }
+
+.range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.range::-webkit-slider-runnable-track {
+  height: 4px;
+  background: linear-gradient(to right, var(--color-signal) var(--p, 0%), var(--color-band-rule) var(--p, 0%));
+}
+.range::-moz-range-track { height: 4px; background: var(--color-band-rule); }
+.range::-moz-range-progress { height: 4px; background: var(--color-signal); }
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 4px;
+  height: 18px;
+  margin-top: -7px;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-band-ink);
+}
+.range::-moz-range-thumb { width: 4px; height: 18px; border: 0; border-radius: 0; background: var(--color-band-ink); }
+.range:hover::-webkit-slider-thumb { background: var(--color-signal); }
+.range:hover::-moz-range-thumb { background: var(--color-signal); }
+.range:focus-visible { outline: 2px solid var(--color-signal); outline-offset: 2px; }
+.range:disabled { cursor: not-allowed; opacity: 0.5; }
+
+.error { font-size: var(--text-sm); color: var(--color-band-ink); }
+
+/* ---------- speed, chapters, close ---------- */
+
+.tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs) var(--space-md); min-width: 0; }
+
+.speeds { display: flex; margin: 0; padding: 0; border: var(--rule-hair) solid var(--color-band-rule); min-width: 0; }
+.speed { position: relative; display: block; }
+.speed input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.speed span {
+  display: grid;
+  place-items: center;
+  min-width: 40px;
+  min-height: 32px;
+  padding: 0 var(--space-2xs);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-band-muted);
+  transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out);
+}
+.speed + .speed span { border-left: var(--rule-hair) solid var(--color-band-rule); }
+.speed:hover span { color: var(--color-band-ink); background: var(--color-band-2); }
+.speed input:checked + span { background: var(--color-signal); color: var(--color-signal-ink); }
+.speed input:focus-visible + span { outline: 2px solid var(--color-signal); outline-offset: 2px; }
+
+.textBtn {
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-band-ink);
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-label);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-decoration-color: var(--color-band-muted);
+  text-underline-offset: 0.25em;
+  cursor: pointer;
+}
+.textBtn:hover { text-decoration-color: var(--color-signal); text-decoration-thickness: 2px; }
+.textBtn:focus-visible { outline: 2px solid var(--color-signal); outline-offset: 4px; }
+.textLink { color: var(--color-band-ink); text-decoration-color: var(--color-signal); text-underline-offset: 0.2em; }
+.textLink:focus-visible { outline: 2px solid var(--color-signal); outline-offset: 2px; }
+
+/* Phones and narrow windows: the video sits on top, full width, never under 200px tall. */
+@media (max-width: 52rem) {
+  .inner { grid-template-columns: minmax(0, 1fr); gap: var(--space-xs); padding-top: var(--space-xs); }
+  .screen { width: 100%; height: auto; aspect-ratio: 16 / 9; min-height: 200px; max-height: 34dvh; }
+  .spacer { height: 460px; }
+  .controls { gap: var(--space-xs); justify-content: center; }
+  .transport { width: 100%; justify-content: space-between; }
+  .tools { width: 100%; justify-content: space-between; gap: var(--space-xs); }
+  .speed span { min-width: 36px; }
+  .titleRow { touch-action: none; cursor: grab; }
+}
+
+/* ---------- mini: a floating card, dragged anywhere, snapped to a side ---------- */
+
+.player[data-mode="mini"] {
+  inset: 0 auto auto 0;
+  width: min(356px, calc(100vw - 16px));
+  border: var(--rule-heavy) solid var(--color-signal);
+  animation: none;
+}
+.player[data-mode="mini"] .handle { position: absolute; inset: 0 0 auto 0; z-index: 3; height: 22px; margin: 0; }
+.player[data-mode="mini"] .handle span { background: color-mix(in oklab, var(--color-band-ink) 55%, transparent); }
+.player[data-mode="mini"] .inner { display: block; max-width: none; padding: 0; }
+.player[data-mode="mini"] .screen { width: 100%; height: auto; aspect-ratio: 16 / 9; min-height: 200px; max-height: none; outline: 0; }
+
+.miniBar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3xs);
+  padding: var(--space-xs) var(--space-2xs) var(--space-xs) var(--space-sm);
+}
+.miniProgress { position: absolute; inset: 0 0 auto 0; height: 3px; background: linear-gradient(to right, var(--color-signal) var(--p, 0%), var(--color-band-rule) var(--p, 0%)); }
+.miniText { flex: 1 1 auto; min-width: 0; cursor: grab; touch-action: none; }
+.miniTitle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-display); font-stretch: var(--wdth-display); font-weight: 700; font-size: var(--text-md); line-height: 1.2; }
+.miniMeta { font-size: var(--text-xs); color: var(--color-band-muted); }
+.miniPlay { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: var(--radius); background: var(--color-signal); color: var(--color-signal-ink); cursor: pointer; }
+.miniPlay:hover { background: var(--color-band-ink); }
+.miniPlay:focus-visible { outline: 2px solid var(--color-signal); outline-offset: 2px; }
+.miniPlay:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ---------- full: the whole screen ---------- */
+
+.player[data-mode="full"] {
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 0;
+  background: #000;
+  animation: none;
+  transform: none !important;
+}
+.player[data-mode="full"] .handle { display: none; }
+.player[data-mode="full"] .inner {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  max-width: none;
+  min-height: 0;
+  padding: 0;
+  gap: 0;
+}
+.player[data-mode="full"] .screenWrap { flex: 1 1 auto; min-height: 200px; }
+.player[data-mode="full"] .screen { width: 100%; height: 100%; max-height: none; aspect-ratio: auto; outline: 0; }
+.player[data-mode="full"] .side {
+  padding: var(--space-sm) var(--gutter);
+  padding-bottom: max(var(--space-sm), env(safe-area-inset-bottom));
+  background: var(--color-band);
+  border-top: var(--rule-heavy) solid var(--color-signal);
+}
+/* Landscape phones in full screen: keep the video big, the controls to one compact row. */
+@media (max-height: 30rem) {
+  .player[data-mode="full"] .titleRow, .player[data-mode="full"] .speeds { display: none; }
+  .player[data-mode="full"] .side { padding-block: var(--space-2xs); gap: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player, .player:not([data-dragging]) { animation: none; transition: none; }
+  .flash { animation: none; }
+}

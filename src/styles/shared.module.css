@@ -1,0 +1,23 @@
+/* A shared link (/r/<slug>): the pine bar with the wordmark, then the reels feed under it. */
+
+.shell { min-height: 100dvh; background: var(--color-band); }
+
+.bar { position: sticky; top: 0; z-index: var(--z-sticky); }
+
+.barInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  width: 100%;
+  max-width: calc(76rem + 2 * var(--gutter));
+  height: var(--bar-h);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.note { min-width: 0; font-size: var(--text-xs); line-height: 1.3; color: var(--color-band-muted); text-align: right; }
+
+@media (max-width: 40rem) {
+  .note { display: none; }
+}

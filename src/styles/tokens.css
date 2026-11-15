@@ -1,0 +1,84 @@
+/* RecallCast design tokens: the Programme world, a broadcast schedule. Pine ink on a pale
+ * cool paper, one highlighter colour that marks what is on air. Every colour and font used
+ * anywhere in the app is declared here; components only read var(--...). */
+:root {
+  color-scheme: light;
+
+  --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px; --space-2xl: 64px; --space-3xl: 96px; --space-4xl: 144px;
+
+  --text-xs: 0.75rem; --text-sm: 0.875rem; --text-md: 1rem; --text-lg: 1.25rem; --text-xl: 1.5rem; --text-2xl: 2rem; --text-3xl: 2.75rem;
+  --text-display: clamp(3rem, 7.2vw, 6rem);
+  --text-section: clamp(2.25rem, 4vw, 3.75rem);
+  --text-page: clamp(2rem, 3.2vw, 3rem);
+  --text-title: 1.25rem;
+  --text-lead: clamp(1.0625rem, 0.4vw + 0.95rem, 1.25rem);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms; --dur-short: 200ms; --dur-long: 480ms;
+
+  --container: 1200px; --container-app: 1040px; --gutter: 40px;
+  --section-gap: 120px;
+  --time-col: 6.5rem;
+  /* Height of the top bar (app and shared pages); the reels feed starts right under it. */
+  --bar-h: 56px;
+
+  --z-raised: 10; --z-sticky: 200; --z-player: 300; --z-toast: 500;
+
+  /* paper and ink */
+  --color-paper: oklch(97.6% 0.008 155);
+  --color-paper-2: oklch(94.6% 0.012 155);
+  --color-paper-3: oklch(91% 0.016 155);
+  --color-ink: oklch(22% 0.035 165);
+  --color-ink-2: oklch(33% 0.03 165);
+  --color-muted: oklch(45% 0.025 165);
+  --color-rule: oklch(84% 0.02 155);
+
+  /* the band: header, player, the sample episode on the landing page */
+  --color-band: oklch(25% 0.045 165);
+  --color-band-2: oklch(31% 0.045 165);
+  --color-band-ink: oklch(96% 0.012 150);
+  --color-band-muted: oklch(80% 0.03 155);
+  --color-band-rule: oklch(40% 0.04 165);
+
+  /* the highlighter: what is on air, and nothing else */
+  --color-signal: oklch(90% 0.2 122);
+  --color-signal-2: oklch(84% 0.2 122);
+  --color-signal-ink: oklch(22% 0.035 165);
+  --color-signal-ink-2: oklch(34% 0.06 150);
+
+  --color-focus: var(--color-ink);
+  --color-error: oklch(48% 0.19 27); --color-success: oklch(44% 0.11 155); --color-warn: oklch(47% 0.11 70);
+
+  --font-body: var(--font-archivo), "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-archivo), "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --wdth-display: 68%;
+  --wdth-label: 78%;
+
+  --radius: 2px;
+  --rule-hair: 1px;
+  --rule-heavy: 3px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --color-paper: oklch(19% 0.022 165);
+    --color-paper-2: oklch(23% 0.026 165);
+    --color-paper-3: oklch(27% 0.03 165);
+    --color-ink: oklch(95% 0.012 150);
+    --color-ink-2: oklch(86% 0.018 150);
+    --color-muted: oklch(72% 0.03 155);
+    --color-rule: oklch(34% 0.03 165);
+
+    --color-band: oklch(14% 0.022 165);
+    --color-band-2: oklch(21% 0.028 165);
+    --color-band-ink: oklch(95% 0.012 150);
+    --color-band-muted: oklch(74% 0.03 155);
+    --color-band-rule: oklch(30% 0.03 165);
+
+    --color-error: oklch(74% 0.15 27); --color-success: oklch(80% 0.13 155); --color-warn: oklch(82% 0.11 75);
+  }
+}
+
+@media (max-width: 60rem) { :root { --gutter: 24px; --section-gap: 88px; --time-col: 5.25rem; } }
+@media (max-width: 40rem) { :root { --gutter: 16px; --section-gap: 64px; --time-col: 4.25rem; } }

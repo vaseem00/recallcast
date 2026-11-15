@@ -1,0 +1,510 @@
+/* The reels feed: the whole screen under the top bar, on the pine band. One reel per page.
+ *
+ * YouTube's embedded player is pinned at the top of the scroller (position: sticky) and never
+ * moves, shrinks under 200px or has anything drawn over it; the page of each reel (number, hook,
+ * captions, actions) scrolls and snaps beneath or beside it. The highlighter marks what is on
+ * air: the elapsed part of the reel and the caption being spoken. */
+
+.feed {
+  --feed-top: var(--bar-h);
+  --strip-h: 40px;
+  --transport-h: 64px;
+  --slide-h: calc(100dvh - var(--feed-top) - var(--strip-h) - var(--transport-h));
+  --seek-h: 24px;
+  /* Phones and narrow windows: the video is the full width, the page reads below it. */
+  --col-w: min(100vw, 44rem);
+  --frame-w: var(--col-w);
+  --frame-h: max(200px, min(calc(var(--frame-w) * 9 / 16), calc(var(--slide-h) * 0.42)));
+  --stage-h: calc(var(--frame-h) + var(--seek-h));
+  --pad: var(--gutter);
+
+  position: fixed;
+  inset: var(--feed-top) 0 0 0;
+  z-index: var(--z-raised);
+  display: grid;
+  grid-template-rows: var(--strip-h) minmax(0, 1fr) var(--transport-h);
+  --color-focus: var(--color-signal);
+}
+
+/* ---------- the strip: which feed this is ---------- */
+
+.strip {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: var(--space-md);
+  min-width: 0;
+  padding-inline: max(var(--pad), calc((100% - var(--col-w)) / 2 + var(--pad)));
+  border-bottom: var(--rule-hair) solid var(--color-band-rule);
+}
+.strip > :global(.chip) { align-self: center; }
+.stripLinks { display: flex; align-items: stretch; gap: var(--space-lg); min-width: 0; }
+.stripLink,
+.stripCta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 28ch;
+  overflow: hidden;
+  color: var(--color-band-muted);
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-label);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color var(--dur-short) var(--ease-out);
+}
+.stripLink::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: var(--rule-heavy);
+  background: var(--color-signal);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+a.stripLink:hover,
+.stripCta:hover { color: var(--color-band-ink); }
+.stripLink[aria-current="page"] { color: var(--color-band-ink); }
+.stripLink[aria-current="page"]::after { transform: scaleX(1); }
+.stripLink:focus-visible,
+.stripCta:focus-visible { outline: 2px solid var(--color-signal); outline-offset: -3px; }
+/* The title beside it gives way (ellipsis); the link never shrinks or gets cut. */
+.stripCta { flex: none; max-width: none; overflow: visible; color: var(--color-signal); }
+.stripTitle {
+  align-self: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-label);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ---------- the scroller: one page per reel ---------- */
+
+.scroller {
+  position: relative;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  padding-inline: max(0px, calc((100% - var(--col-w)) / 2));
+  outline: 0;
+}
+.scroller::-webkit-scrollbar { display: none; }
+
+/* The pinned player. The negative margin lets the first page start under it. */
+.stage {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  width: var(--frame-w);
+  height: var(--stage-h);
+  margin-bottom: calc(-1 * var(--stage-h));
+  background: var(--color-band);
+}
+.screen { width: 100%; height: var(--frame-h); background: #000; }
+.screen > *,
+.screen iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+.range {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: var(--seek-h);
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.range::-webkit-slider-runnable-track {
+  height: 4px;
+  background: linear-gradient(to right, var(--color-signal) var(--p, 0%), var(--color-band-rule) var(--p, 0%));
+}
+.range::-moz-range-track { height: 4px; background: var(--color-band-rule); }
+.range::-moz-range-progress { height: 4px; background: var(--color-signal); }
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 4px;
+  height: 16px;
+  margin-top: -6px;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-band-ink);
+}
+.range::-moz-range-thumb { width: 4px; height: 16px; border: 0; border-radius: 0; background: var(--color-band-ink); }
+.range:hover::-webkit-slider-thumb { background: var(--color-signal); }
+.range:hover::-moz-range-thumb { background: var(--color-signal); }
+.range:focus-visible { outline: 2px solid var(--color-signal); outline-offset: -2px; }
+.range:disabled { cursor: default; opacity: 0.5; }
+
+.slide {
+  height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: var(--stage-h) auto minmax(0, 1fr) auto;
+  grid-template-areas: "frame" "head" "caps" "foot";
+  min-width: 0;
+}
+.frameSpace { grid-area: frame; }
+
+/* ---------- the page of a reel ---------- */
+
+.head {
+  grid-area: head;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-xs) var(--space-md);
+  padding: var(--space-sm) var(--pad) 0;
+  min-width: 0;
+}
+.count {
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-display);
+  font-weight: 800;
+  font-size: var(--text-xl);
+  line-height: 1;
+}
+.countOf { color: var(--color-band-muted); font-weight: 600; }
+.head > :global(.chip) { justify-self: start; }
+.hook {
+  grid-column: 1 / -1;
+  font-size: clamp(1.5rem, 2.2vw + 1rem, 2.5rem);
+  line-height: 1.02;
+  text-transform: uppercase;
+  text-wrap: balance;
+  /* A long hook must not push the captions off a small phone. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+}
+.source {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-sm);
+  min-width: 0;
+  max-height: 2lh;
+  overflow: hidden;
+  font-size: var(--text-sm);
+  color: var(--color-band-muted);
+}
+.source > span:first-child:not(:last-child) { color: var(--color-band-ink); font-weight: 600; }
+
+.error { grid-column: 1 / -1; font-size: var(--text-sm); color: var(--color-band-ink); }
+
+/* The words of the reel. It never scrolls by hand: a swipe here moves the feed. The script
+ * keeps the line being spoken in view. */
+.captions {
+  grid-area: caps;
+  min-height: 0;
+  margin-top: var(--space-sm);
+  padding-inline: var(--pad);
+  overflow: hidden;
+  scroll-behavior: smooth;
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5rem), transparent);
+}
+.words {
+  max-width: 60ch;
+  padding-bottom: 2.5rem;
+  font-size: clamp(1.125rem, 0.5vw + 1rem, 1.375rem);
+  line-height: 1.5;
+  color: var(--color-band-muted);
+  text-wrap: wrap;
+}
+/* Reels cut without captions: what they were cut from, in place of the captions. */
+.note {
+  max-width: 52ch;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--color-band-muted);
+}
+.words > span { transition: color var(--dur-short) var(--ease-out); }
+.words > span[data-state="said"] { color: var(--color-band-ink); }
+.words > span[data-state="now"] {
+  background: var(--color-signal);
+  color: var(--color-signal-ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.foot {
+  grid-area: foot;
+  display: grid;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--pad) var(--space-sm);
+  min-width: 0;
+}
+.takeaway {
+  max-width: 60ch;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  color: var(--color-band-ink);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs) var(--space-md); min-width: 0; }
+
+/* "Up next": the following reel as a schedule row. Only where there is room (wide screens). */
+.upNext { display: none; }
+.actions :global(.btn)[data-on] { background: var(--color-signal); border-color: var(--color-signal); color: var(--color-signal-ink); }
+
+.textBtn,
+.textLink {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-band-ink);
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-label);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-decoration-color: var(--color-band-muted);
+  text-underline-offset: 0.25em;
+  cursor: pointer;
+}
+.textBtn:hover,
+.textLink:hover { text-decoration-color: var(--color-signal); text-decoration-thickness: 2px; }
+.textBtn:focus-visible,
+.textLink:focus-visible { outline: 2px solid var(--color-signal); outline-offset: 2px; }
+
+/* ---------- the last page, and the feed with nothing in it ---------- */
+
+.endBody,
+.empty {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--pad);
+  min-width: 0;
+}
+.endBody { grid-row: 2 / -1; }
+.empty { grid-row: 2 / 4; padding-inline: max(var(--pad), calc((100% - var(--col-w)) / 2 + var(--pad))); padding-top: var(--space-2xl); }
+.endLine { max-width: 52ch; color: var(--color-band-muted); }
+
+/* ---------- transport: the controls of the one player ---------- */
+
+.transport {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-inline: max(var(--pad), calc((100% - var(--col-w)) / 2 + var(--pad)));
+  padding-bottom: env(safe-area-inset-bottom);
+  border-top: var(--rule-hair) solid var(--color-band-rule);
+  min-width: 0;
+}
+.moves { display: flex; align-items: center; gap: var(--space-2xs); }
+.playBtn,
+.iconBtn {
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out);
+}
+.playBtn { width: 48px; height: 48px; background: var(--color-signal); color: var(--color-signal-ink); }
+.playBtn:hover { background: var(--color-band-ink); }
+.playBtn:active { background: var(--color-signal-2); }
+.playBtn[aria-busy="true"] { animation: reel-busy 1s steps(2, jump-none) infinite; }
+@keyframes reel-busy { from { opacity: 1; } to { opacity: 0.6; } }
+.iconBtn { width: 44px; height: 44px; background: transparent; color: var(--color-band-muted); }
+.iconBtn:hover { background: var(--color-band-2); color: var(--color-band-ink); }
+.iconBtn:active { color: var(--color-signal); }
+.playBtn:disabled,
+.iconBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.iconBtn:disabled:hover { background: transparent; color: var(--color-band-muted); }
+.playBtn:focus-visible,
+.iconBtn:focus-visible,
+.toolBtn:focus-visible { outline: 2px solid var(--color-signal); outline-offset: 2px; }
+
+.clock { min-width: 0; overflow: hidden; white-space: nowrap; font-size: var(--text-sm); font-weight: 600; color: var(--color-band-muted); }
+
+.tools { display: flex; align-items: center; border: var(--rule-hair) solid var(--color-band-rule); }
+.toolBtn {
+  min-width: 44px;
+  min-height: 36px;
+  padding: 0 var(--space-sm);
+  border: 0;
+  background: transparent;
+  color: var(--color-band-muted);
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-label);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out);
+}
+.toolBtn + .toolBtn { border-left: var(--rule-hair) solid var(--color-band-rule); }
+.toolBtn:hover { background: var(--color-band-2); color: var(--color-band-ink); }
+.toolBtn[aria-pressed="true"] { color: var(--color-band-ink); }
+/* The browser started the video silent: this is the one thing the viewer should press. */
+.toolBtn[data-urgent] { background: var(--color-signal); color: var(--color-signal-ink); }
+/* A button with a long and a short label: phones show the short one. */
+.labelShort { display: none; }
+
+.flash {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--transport-h) + var(--space-sm) + env(safe-area-inset-bottom));
+  z-index: 3;
+  translate: -50% 0;
+  width: max-content;
+  max-width: min(calc(100% - 2 * var(--pad)), 56ch);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-signal);
+  color: var(--color-signal-ink);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  animation: reel-flash var(--dur-short) var(--ease-out);
+}
+@keyframes reel-flash { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---------- wide windows: the video on the left, the page beside it ---------- */
+
+@media (min-width: 60rem) and (min-height: 36rem) {
+  .feed {
+    --pad: 0px;
+    --col-w: min(calc(100vw - 2 * var(--gutter)), 76rem);
+    --frame-w: min(calc(var(--col-w) * 0.6), calc((var(--slide-h) - var(--seek-h) - 11rem) * 16 / 9));
+    --frame-h: calc(var(--frame-w) * 9 / 16);
+  }
+  .strip,
+  .transport { padding-inline: max(var(--gutter), calc((100% - var(--col-w)) / 2)); }
+  .empty { padding-inline: max(var(--gutter), calc((100% - var(--col-w)) / 2)); }
+  .slide {
+    grid-template-columns: var(--frame-w) minmax(0, 1fr);
+    /* The frame spans the first two rows, so the foot starts exactly under the pinned video. */
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-areas: "frame head" "frame caps" "foot caps";
+    column-gap: var(--space-xl);
+  }
+  .frameSpace { height: var(--stage-h); }
+  .head { align-self: start; padding-top: var(--space-lg); }
+  .hook { -webkit-line-clamp: 5; line-clamp: 5; }
+  .captions { margin-top: var(--space-md); }
+  .foot { align-self: start; padding-block: var(--space-md); gap: var(--space-md); }
+  .takeaway { font-size: var(--text-md); -webkit-line-clamp: 4; line-clamp: 4; }
+  .endBody { grid-row: auto; grid-column: 2; grid-area: head; padding-top: var(--space-lg); }
+
+  .upNext {
+    display: grid;
+    grid-template-columns: var(--time-col) minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--space-md);
+    width: 100%;
+    margin-top: var(--space-xs);
+    padding: var(--space-md) 0;
+    border: 0;
+    border-top: var(--rule-hair) solid var(--color-band-rule);
+    border-bottom: var(--rule-hair) solid var(--color-band-rule);
+    background: transparent;
+    color: var(--color-band-ink);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--dur-short) var(--ease-out);
+  }
+  .upNext:hover { background: var(--color-band-2); }
+  .upNext:focus-visible { outline: 2px solid var(--color-signal); outline-offset: 2px; }
+  .upNextNum {
+    padding-left: var(--space-xs);
+    font-family: var(--font-display);
+    font-stretch: var(--wdth-display);
+    font-weight: 800;
+    font-size: var(--text-2xl);
+    line-height: 1;
+    color: var(--color-band-muted);
+  }
+  .upNextBody { display: grid; gap: var(--space-2xs); min-width: 0; }
+  .upNextLabel {
+    font-family: var(--font-display);
+    font-stretch: var(--wdth-label);
+    font-weight: 700;
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-band-muted);
+  }
+  .upNextHook {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-display);
+    font-stretch: var(--wdth-display);
+    font-weight: 700;
+    font-size: var(--text-lg);
+    line-height: 1.2;
+  }
+}
+
+/* ---------- a phone on its side: no room for the strip; the page sits beside the video ---------- */
+
+@media (max-height: 30rem) and (orientation: landscape) {
+  .feed {
+    --strip-h: 0px;
+    --transport-h: 52px;
+    --pad: var(--space-md);
+    --col-w: 100vw;
+    --frame-h: max(200px, calc(var(--slide-h) - var(--seek-h)));
+    --frame-w: min(58vw, calc(var(--frame-h) * 16 / 9));
+  }
+  .strip { display: none; }
+  .slide {
+    grid-template-columns: var(--frame-w) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas: "frame head" "frame caps" "frame foot";
+  }
+  .hook { font-size: var(--text-lg); -webkit-line-clamp: 2; line-clamp: 2; }
+  .takeaway { display: none; }
+  .endBody { grid-row: auto; grid-area: head; }
+}
+
+@media (max-width: 26rem) {
+  .clock { display: none; }
+  .transport { grid-template-columns: auto auto; justify-content: space-between; gap: var(--space-xs); }
+  .toolBtn { min-width: 40px; padding-inline: var(--space-xs); letter-spacing: 0.03em; }
+  .labelLong { display: none; }
+  .labelShort { display: inline; }
+}
+
+/* The narrowest phones: speed is the control to give up; sound and auto-next stay. */
+@media (max-width: 21.5rem) {
+  .speedBtn { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .captions { scroll-behavior: auto; }
+  .flash, .playBtn[aria-busy="true"] { animation: none; }
+}
